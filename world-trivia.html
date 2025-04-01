@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Trivia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex flex-col items-center py-10">
+    <div class="max-w-3xl w-full bg-white rounded-md shadow-lg p-6 text-center">
+        <h1 class="text-4xl font-bold text-blue-600 mb-6">World Trivia</h1>
+        <div id="categories" class="space-y-4">
+            <h2 class="text-xl font-medium text-gray-800">Choose a Category:</h2>
+            <button class="bg-blue-500 text-white px-6 py-2 rounded-md font-medium hover:bg-blue-600 w-full"
+                onclick="startQuiz('geography')">Geography</button>
+            <button class="bg-green-500 text-white px-6 py-2 rounded-md font-medium hover:bg-green-600 w-full"
+                onclick="startQuiz('music')">Music</button>
+            <button class="bg-purple-500 text-white px-6 py-2 rounded-md font-medium hover:bg-purple-600 w-full"
+                onclick="startQuiz('science')">Science</button>
+            <button class="bg-orange-500 text-white px-6 py-2 rounded-md font-medium hover:bg-orange-600 w-full"
+                onclick="startQuiz('art')">Art</button>
+            <button class="bg-teal-500 text-white px-6 py-2 rounded-md font-medium hover:bg-teal-600 w-full"
+                onclick="startQuiz('culture')">Culture</button>
+            <button class="bg-yellow-500 text-white px-6 py-2 rounded-md font-medium hover:bg-yellow-600 w-full"
+                onclick="startQuiz('history')">History</button>
+            <button class="bg-pink-500 text-white px-6 py-2 rounded-md font-medium hover:bg-pink-600 w-full"
+                onclick="startQuiz('technology')">Technology</button>
+            <button class="bg-red-500 text-white px-6 py-2 rounded-md font-medium hover:bg-red-600 w-full"
+                onclick="startQuiz('tourism')">Tourism</button>
+        </div>
+        <div id="quiz" class="hidden">
+            <div class="question text-xl font-medium text-gray-800 mb-6">Loading question...</div>
+            <div class="options space-y-4"></div>
+            <div class="message mt-4 text-lg font-semibold"></div>
+        </div>
+        <div id="result" class="hidden text-xl font-bold text-gray-800 mt-6"></div>
+        <button class="try-again bg-red-500 text-white px-6 py-2 rounded-md font-medium hover:bg-red-600 mt-4 hidden"
+            onclick="restartQuiz()">Try Again</button>
+    </div>
+
+    <script>
+        const triviaQuestions = {
+            geography: [
+                { question: "Which country has the most islands?", options: ["Norway", "Indonesia", "Sweden", "Philippines"], answer: "Sweden" },
+                { question: "What is the largest desert in the world?", options: ["Sahara", "Antarctica", "Gobi", "Arctic"], answer: "Antarctica" },
+                { question: "Which continent has the largest number of countries?", options: ["Asia", "Africa", "Europe", "South America"], answer: "Africa" },
+                { question: "What is the capital of Australia?", options: ["Sydney", "Melbourne", "Brisbane", "Canberra"], answer: "Canberra" },
+                { question: "Which is the smallest country in the world?", options: ["Monaco", "Vatican City", "San Marino", "Liechtenstein"], answer: "Vatican City" },
+                { question: "Which river is the longest in the world?", options: ["Amazon", "Nile", "Yangtze", "Mississippi"], answer: "Nile" },
+                { question: "Mount Everest is part of which mountain range?", options: ["Andes", "Himalayas", "Rockies", "Alps"], answer: "Himalayas" },
+                { question: "What is the capital of Canada?", options: ["Toronto", "Ottawa", "Vancouver", "Montreal"], answer: "Ottawa" },
+                { question: "Which country is the largest by land area?", options: ["Canada", "China", "United States", "Russia"], answer: "Russia" },
+                { question: "Which country is famously shaped like a boot?", options: ["Spain", "Italy", "Greece", "Portugal"], answer: "Italy" },
+                { question: "What is the capital of Japan?", options: ["Tokyo", "Kyoto", "Osaka", "Hiroshima"], answer: "Tokyo" },
+                { question: "Which ocean is the largest?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], answer: "Pacific" },
+                { question: "What is the official language of Brazil?", options: ["Spanish", "Portuguese", "French", "English"], answer: "Portuguese" },
+                { question: "Which country is known as the Land of the Rising Sun?", options: ["China", "Japan", "South Korea", "Thailand"], answer: "Japan" },
+                { question: "What is the capital of Egypt?", options: ["Cairo", "Alexandria", "Giza", "Luxor"], answer: "Cairo" },
+                { question: "Which country has the highest population?", options: ["India", "United States", "China", "Indonesia"], answer: "China" },
+                { question: "What is the name of the sea bordered by Europe, Asia, and Africa?", options: ["Caribbean Sea", "Mediterranean Sea", "Baltic Sea", "Black Sea"], answer: "Mediterranean Sea" },
+                { question: "Which U.S. state is the Grand Canyon located in?", options: ["Nevada", "Arizona", "Utah", "Colorado"], answer: "Arizona" },
+                { question: "What is the capital of Germany?", options: ["Berlin", "Munich", "Frankfurt", "Hamburg"], answer: "Berlin" },
+                { question: "Which country is home to the Great Wall?", options: ["India", "China", "Japan", "Mongolia"], answer: "China" },
+                { question: "What is the capital of South Africa?", options: ["Cape Town", "Pretoria", "Johannesburg", "Durban"], answer: "Pretoria" },
+                { question: "Which country is known for its maple syrup?", options: ["United States", "Canada", "Sweden", "Finland"], answer: "Canada" },
+                { question: "What is the capital of France?", options: ["Paris", "Lyon", "Marseille", "Nice"], answer: "Paris" },
+                { question: "Which country is famous for its pyramids?", options: ["Mexico", "Egypt", "Peru", "Sudan"], answer: "Egypt" },
+                { question: "What is the capital of India?", options: ["Mumbai", "New Delhi", "Bangalore", "Kolkata"], answer: "New Delhi" },
+                { question: "Which country is known for its fjords?", options: ["Norway", "Sweden", "Iceland", "Denmark"], answer: "Norway" },
+                { question: "What is the capital of Italy?", options: ["Rome", "Milan", "Venice", "Florence"], answer: "Rome" },
+                { question: "Which country is home to the Amazon Rainforest?", options: ["Brazil", "Colombia", "Peru", "Venezuela"], answer: "Brazil" },
+                { question: "What is the capital of Russia?", options: ["Moscow", "Saint Petersburg", "Kazan", "Novosibirsk"], answer: "Moscow" },
+                { question: "Which country is known for its tulips?", options: ["Belgium", "Netherlands", "Denmark", "Germany"], answer: "Netherlands" },
+                { question: "What is the capital of Spain?", options: ["Barcelona", "Madrid", "Seville", "Valencia"], answer: "Madrid" },
+                { question: "Which country is home to the Andes Mountains?", options: ["Chile", "Argentina", "Peru", "All of the above"], answer: "All of the above" },
+                { question: "What is the capital of Thailand?", options: ["Bangkok", "Phuket", "Chiang Mai", "Pattaya"], answer: "Bangkok" },
+                { question: "Which country is known for its kangaroos?", options: ["New Zealand", "Australia", "South Africa", "Canada"], answer: "Australia" },
+                { question: "What is the capital of Mexico?", options: ["Guadalajara", "Mexico City", "Monterrey", "Cancun"], answer: "Mexico City" },
+                { question: "Which country is known for its castles?", options: ["Scotland", "Germany", "Ireland", "All of the above"], answer: "All of the above" },
+                { question: "What is the capital of Greece?", options: ["Athens", "Thessaloniki", "Patras", "Heraklion"], answer: "Athens" },
+                { question: "Which country is home to Mount Kilimanjaro?", options: ["Kenya", "Tanzania", "Uganda", "Rwanda"], answer: "Tanzania" },
+                { question: "What is the capital of Argentina?", options: ["Buenos Aires", "Cordoba", "Rosario", "Mendoza"], answer: "Buenos Aires" }
+            ],
+            music: [
+                { question: "Who composed the Four Seasons?", options: ["Mozart", "Beethoven", "Vivaldi", "Bach"], answer: "Vivaldi" },
+                { question: "Which singer is known as the Queen of Pop?", options: ["Madonna", "Beyoncé", "Mariah Carey", "Lady Gaga"], answer: "Madonna" },
+                { question: "Which instrument has 88 keys?", options: ["Guitar", "Drum", "Piano", "Violin"], answer: "Piano" },
+                { question: "What is Beethoven's Symphony No. 9 also known as?", options: ["Moonlight", "Ode to Joy", "Eroica", "Pastoral"], answer: "Ode to Joy" },
+                { question: "Which artist is famously associated with the moonwalk dance?", options: ["Elvis Presley", "Michael Jackson", "Prince", "David Bowie"], answer: "Michael Jackson" },
+                { question: "What is the name of the famous music festival held in California?", options: ["Lollapalooza", "Coachella", "Glastonbury", "Woodstock"], answer: "Coachella" },
+                { question: "Which band was Freddie Mercury the lead singer of?", options: ["The Beatles", "Queen", "Led Zeppelin", "The Rolling Stones"], answer: "Queen" },
+                { question: "What genre of music is characterized by a strong rhythm and often features brass instruments?", options: ["Jazz", "Classical", "Rock", "Pop"], answer: "Jazz" },
+                { question: "Who is known as the King of Rock and Roll?", options: ["Chuck Berry", "Elvis Presley", "Little Richard", "Buddy Holly"], answer: "Elvis Presley" },
+                { question: "Which pop star's real name is Stefani Joanne Angelina Germanotta?", options: ["Katy Perry", "Lady Gaga", "Taylor Swift", "Ariana Grande"], answer: "Lady Gaga" },
+                { question: "What is the name of the famous music festival held in the UK?", options: ["Glastonbury", "Reading", "Isle of Wight", "Download"], answer: "Glastonbury" },
+                { question: "Which instrument is known as the 'king of instruments'?", options: ["Piano", "Organ", "Violin", "Trumpet"], answer: "Organ" },
+                { question: "Who is known for the song 'Like a Rolling Stone'?", options: ["Bob Dylan", "Bruce Springsteen", "Neil Young", "Johnny Cash"], answer: "Bob Dylan" },
+                { question: "What is the name of Taylor Swift's debut album?", options: ["Fearless", "1989", "Taylor Swift", "Red"], answer: "Taylor Swift" },
+                { question: "Which band released the album 'Dark Side of the Moon'?", options: ["The Beatles", "Led Zeppelin", "Pink Floyd", "The Who"], answer: "Pink Floyd" },
+                { question: "What is the name of Beyoncé's first solo album?", options: ["Dangerously in Love", "B'Day", "I Am... Sasha Fierce", "4"], answer: "Dangerously in Love" },
+                { question: "Which singer is known for her hit song 'Rolling in the Deep'?", options: ["Adele", "Rihanna", "Beyoncé", "Taylor Swift"], answer: "Adele" },
+                { question: "What genre of music did Elvis Presley popularize?", options: ["Jazz", "Rock and Roll", "Country", "Blues"], answer: "Rock and Roll" },
+                { question: "Who is known for the song 'Uptown Funk'?", options: ["Bruno Mars", "Justin Timberlake", "Pharrell Williams", "Mark Ronson"], answer: "Mark Ronson" }
+            ],
+            science: [
+                { question: "What planet is known as the 'Red Planet'?", options: ["Mars", "Jupiter", "Venus", "Saturn"], answer: "Mars" },
+                { question: "What is the chemical symbol for water?", options: ["H2O", "O2", "CO2", "NaCl"], answer: "H2O" },
+                { question: "How many bones are in the human body?", options: ["206", "200", "210", "205"], answer: "206" },
+                { question: "What gas do plants absorb during photosynthesis?", options: ["Nitrogen", "Oxygen", "Carbon dioxide", "Hydrogen"], answer: "Carbon dioxide" },
+                { question: "What is the Earth's outer layer called?", options: ["Core", "Mantle", "Crust", "Lithosphere"], answer: "Crust" },
+            ],
+            art: [
+                { question: "Who painted the Mona Lisa?", options: ["Michelangelo", "Leonardo da Vinci", "Van Gogh", "Rembrandt"], answer: "Leonardo da Vinci" },
+                { question: "What is the term for painting on wet plaster?", options: ["Mosaic", "Fresco", "Portraiture", "Collage"], answer: "Fresco" },
+                { question: "Which artist created 'Starry Night'?", options: ["Pablo Picasso", "Vincent Van Gogh", "Claude Monet", "Edvard Munch"], answer: "Vincent Van Gogh" },
+                { question: "What is Michelangelo's famous sculpture of a Biblical hero?", options: ["Moses", "David", "Adam", "Noah"], answer: "David" },
+                { question: "Who painted 'The Persistence of Memory'?", options: ["Salvador Dalí", "Pablo Picasso", "Henri Matisse", "Claude Monet"], answer: "Salvador Dalí" },
+                { question: "Which artist is known for the painting 'The Scream'?", options: ["Edvard Munch", "Pablo Picasso", "Claude Monet", "Salvador Dalí"], answer: "Edvard Munch" },
+                { question: "What is the art style associated with Pablo Picasso?", options: ["Cubism", "Impressionism", "Surrealism", "Expressionism"], answer: "Cubism" },
+                { question: "Who painted 'The Last Supper'?", options: ["Leonardo da Vinci", "Raphael", "Michelangelo", "Caravaggio"], answer: "Leonardo da Vinci" },
+                { question: "Which artist is famous for the painting 'Girl with a Pearl Earring'?", options: ["Johannes Vermeer", "Rembrandt", "Van Gogh", "Monet"], answer: "Johannes Vermeer" },
+                { question: "What is the name of the famous ceiling painted by Michelangelo?", options: ["Sistine Chapel", "St. Peter's Basilica", "Notre Dame", "Florence Cathedral"], answer: "Sistine Chapel" },
+                { question: "Which artist is known for the 'Water Lilies' series?", options: ["Claude Monet", "Vincent Van Gogh", "Paul Cézanne", "Henri Matisse"], answer: "Claude Monet" },
+                { question: "What is the term for a painting done rapidly in watercolor on wet plaster?", options: ["Fresco", "Mosaic", "Etching", "Collage"], answer: "Fresco" },
+                { question: "Who painted 'Guernica'?", options: ["Pablo Picasso", "Salvador Dalí", "Henri Matisse", "Joan Miró"], answer: "Pablo Picasso" },
+                { question: "Which artist is known for the 'Campbell's Soup Cans' artwork?", options: ["Andy Warhol", "Roy Lichtenstein", "Jackson Pollock", "Keith Haring"], answer: "Andy Warhol" },
+                { question: "What is the name of the famous sculpture by Auguste Rodin?", options: ["The Thinker", "David", "Venus de Milo", "The Kiss"], answer: "The Thinker" },
+                { question: "Which artist is known for the painting 'The Birth of Venus'?", options: ["Sandro Botticelli", "Leonardo da Vinci", "Raphael", "Michelangelo"], answer: "Sandro Botticelli" },
+                { question: "What is the term for a painting of a person?", options: ["Landscape", "Portrait", "Still Life", "Abstract"], answer: "Portrait" },
+                { question: "Who painted 'The Night Watch'?", options: ["Rembrandt", "Vermeer", "Van Gogh", "Monet"], answer: "Rembrandt" },
+                { question: "Which artist is known for the painting 'The Kiss'?", options: ["Gustav Klimt", "Henri Matisse", "Pablo Picasso", "Salvador Dalí"], answer: "Gustav Klimt" },
+                { question: "What is the term for a painting of inanimate objects?", options: ["Landscape", "Portrait", "Still Life", "Abstract"], answer: "Still Life" },
+                { question: "Who painted 'The School of Athens'?", options: ["Raphael", "Michelangelo", "Leonardo da Vinci", "Caravaggio"], answer: "Raphael" },
+                { question: "Which artist is known for the painting 'The Creation of Adam'?", options: ["Michelangelo", "Leonardo da Vinci", "Raphael", "Caravaggio"], answer: "Michelangelo" }
+            ],
+            culture: [
+                { question: "What is the traditional Japanese tea ceremony called?", options: ["Ikebana", "Chanoyu", "Origami", "Kendo"], answer: "Chanoyu" },
+                { question: "Which country is famous for flamenco dancing?", options: ["Brazil", "Spain", "Argentina", "Portugal"], answer: "Spain" },
+                { question: "What is the national dish of India?", options: ["Sushi", "Paella", "Biryani", "Tacos"], answer: "Biryani" },
+                { question: "What is the festival of colors celebrated in India?", options: ["Diwali", "Holi", "Eid", "Navratri"], answer: "Holi" },
+                { question: "Which city is the birthplace of pizza?", options: ["Rome", "Naples", "Florence", "Venice"], answer: "Naples" },
+                { question: "What is the traditional Scottish dress called?", options: ["Kilt", "Sari", "Kimono", "Toga"], answer: "Kilt" },
+                { question: "Which country is known for its tulip fields?", options: ["Belgium", "Netherlands", "France", "Germany"], answer: "Netherlands" },
+                { question: "What is the traditional dance of Argentina?", options: ["Samba", "Flamenco", "Tango", "Ballet"], answer: "Tango" },
+                { question: "Which country celebrates the Day of the Dead?", options: ["Spain", "Mexico", "Brazil", "Argentina"], answer: "Mexico" },
+                { question: "What is the traditional Japanese art of folding paper called?", options: ["Ikebana", "Origami", "Calligraphy", "Sumi-e"], answer: "Origami" },
+                { question: "Which country is known for its samurai culture?", options: ["China", "Japan", "Korea", "Vietnam"], answer: "Japan" },
+                { question: "What is the traditional Hawaiian feast called?", options: ["Luau", "Fiesta", "Barbecue", "Potluck"], answer: "Luau" },
+                { question: "Which country is famous for its chocolate and watches?", options: ["Belgium", "Switzerland", "France", "Germany"], answer: "Switzerland" },
+                { question: "What is the traditional dance of Ireland?", options: ["Samba", "Flamenco", "Irish Dance", "Ballet"], answer: "Irish Dance" },
+                { question: "Which country is known for its ancient pyramids?", options: ["Egypt", "Greece", "Italy", "Turkey"], answer: "Egypt" },
+                { question: "What is the traditional dress of India called?", options: ["Kimono", "Sari", "Kilt", "Toga"], answer: "Sari" },
+                { question: 'In which country would you find the cultural festival of La Tomatina?', options: ['Spain', 'Italy', 'France', 'Portugal'], answer: 'Spain' },
+                { question: 'What is the name of the famous Brazilian carnival?', options: ['Carnaval', 'Festa Junina', 'Oktoberfest', 'Dia de los Muertos'], answer: 'Carnaval' },
+                { question: 'Which country is known for its traditional dance called the Hula?', options: ['Hawaii', 'Japan', 'India', 'Mexico'], answer: 'Hawaii' },
+                { question: 'What is the traditional dress of Scotland called?', options: ['Kilt', 'Sari', 'Kimono', 'Toga'], answer: 'Kilt' },
+                { question: 'Which country is famous for its Oktoberfest beer festival?', options: ['Germany', 'Austria', 'Switzerland', 'Belgium'], answer: 'Germany' },
+                { question: "What is the traditional dance of Spain?", options: ["Samba", "Flamenco", "Tango", "Ballet"], answer: "Flamenco" },
+                { question: "Which country is known for its ancient ruins of Machu Picchu?", options: ["Peru", "Mexico", "Brazil", "Chile"], answer: "Peru" },
+                { question: "What is the traditional dress of Japan called?", options: ["Kimono", "Sari", "Kilt", "Toga"], answer: "Kimono" },
+                { question: "Which country celebrates the festival of Diwali?", options: ["India", "China", "Japan", "Thailand"], answer: "India" },
+                { question: "What is the traditional dance of Hawaii?", options: ["Samba", "Flamenco", "Hula", "Ballet"], answer: "Hula" },
+                { question: "Which country is known for its traditional tea ceremony?", options: ["China", "Japan", "India", "Korea"], answer: "Japan" },
+                { question: "What is the traditional dress of Mexico called?", options: ["Sari", "Kimono", "Huipil", "Kilt"], answer: "Huipil" },
+                { question: "Which country is famous for its tango dance?", options: ["Argentina", "Brazil", "Spain", "Italy"], answer: "Argentina" },
+                { question: "What is the traditional dress of Korea called?", options: ["Hanbok", "Kimono", "Sari", "Kilt"], answer: "Hanbok" },
+                { question: 'In which country would you find the cultural festival of Holi?', options: ['India', 'Nepal', 'Bangladesh', 'Pakistan'], answer: 'India' },
+                { question: 'What is the name of the famous Indian festival of lights?', options: ['Diwali', 'Eid', 'Christmas', 'Holi'], answer: 'Diwali' },
+                { question: 'Which country is known for its traditional dance called the Flamenco?', options: ['Spain', 'Italy', 'France', 'Portugal'], answer: 'Spain' }
+            ],
+            history: [
+                { question: "Who was the first president of the United States?", options: ["Abraham Lincoln", "George Washington", "Thomas Jefferson", "John Adams"], answer: "George Washington" },
+                { question: "Which year marked the fall of the Berlin Wall?", options: ["1989", "1990", "1991", "1987"], answer: "1989" },
+                { question: "Who discovered America?", options: ["Christopher Columbus", "Amerigo Vespucci", "Vasco da Gama", "Ferdinand Magellan"], answer: "Christopher Columbus" },
+                { question: "What year did World War II end?", options: ["1944", "1945", "1946", "1947"], answer: "1945" },
+                { question: "Which ancient civilization built Machu Picchu?", options: ["Aztec", "Inca", "Maya", "Olmec"], answer: "Inca" },
+                
+            ],
+            technology: [
+                { question: "What does HTML stand for?", options: ["HyperText Markup Language", "HighText Markup Language", "HyperLink Media Language", "None of the above"], answer: "HyperText Markup Language" },
+                { question: "Who is known as the father of computers?", options: ["Charles Babbage", "Alan Turing", "Steve Jobs", "Bill Gates"], answer: "Charles Babbage" },
+                { question: "What is the name of Apple's AI assistant?", options: ["Alexa", "Cortana", "Siri", "Google Assistant"], answer: "Siri" },
+                { question: "What does CPU stand for?", options: ["Central Processing Unit", "Computer Power Unit", "Central Performance Utility", "Core Processing Unit"], answer: "Central Processing Unit" },
+                { question: "What year was the World Wide Web invented?", options: ["1988", "1989", "1990", "1991"], answer: "1989" },
+                { question: "What does RAM stand for?", options: ["Random Access Memory", "Read Access Memory", "Run Access Memory", "Rapid Access Memory"], answer: "Random Access Memory" },
+                { question: "Who founded Microsoft?", options: ["Steve Jobs", "Bill Gates", "Mark Zuckerberg", "Elon Musk"], answer: "Bill Gates" },
+                { question: "What is the name of Google's parent company?", options: ["Alphabet", "Microsoft", "Amazon", "Meta"], answer: "Alphabet" },
+                { question: "What does HTTP stand for?", options: ["HyperText Transfer Protocol", "HyperText Transmission Protocol", "HyperText Transfer Process", "HyperText Transmission Process"], answer: "HyperText Transfer Protocol" },
+                { question: "What is the name of the first electronic computer?", options: ["ENIAC", "UNIVAC", "IBM 701", "Apple I"], answer: "ENIAC" },
+                { question: "What does GPU stand for?", options: ["Graphics Processing Unit", "General Processing Unit", "Graphical Performance Unit", "Graphics Performance Unit"], answer: "Graphics Processing Unit" },
+                { question: "What programming language is known as the language of the web?", options: ["Python", "JavaScript", "C++", "Ruby"], answer: "JavaScript" },
+                { question: "What is the name of the first web browser?", options: ["Mosaic", "Netscape", "Internet Explorer", "WorldWideWeb"], answer: "WorldWideWeb" },
+                { question: "What does DNS stand for?", options: ["Domain Name System", "Digital Network System", "Domain Name Server", "Digital Name Server"], answer: "Domain Name System" },
+                { question: "Who invented the World Wide Web?", options: ["Tim Berners-Lee", "Bill Gates", "Steve Jobs", "Alan Turing"], answer: "Tim Berners-Lee" },
+                { question: "What does IoT stand for?", options: ["Internet of Things", "Internet of Technology", "Integration of Technology", "Internet of Tools"], answer: "Internet of Things" },
+                { question: "What is the name of the first smartphone?", options: ["iPhone", "BlackBerry", "Simon Personal Communicator", "Nokia 3310"], answer: "Simon Personal Communicator" },
+                { question: "What does AI stand for?", options: ["Artificial Intelligence", "Automated Intelligence", "Advanced Intelligence", "Artificial Integration"], answer: "Artificial Intelligence" },
+                { question: "What is the name of the first programming language?", options: ["Fortran", "COBOL", "Assembly", "Ada"], answer: "Fortran" },
+                { question: "What does URL stand for?", options: ["Uniform Resource Locator", "Universal Resource Locator", "Uniform Reference Locator", "Universal Reference Locator"], answer: "Uniform Resource Locator" },
+                { question: "What is the name of the first search engine?", options: ["Google", "Yahoo", "Archie", "AltaVista"], answer: "Archie" },
+                { question: "What does SSD stand for?", options: ["Solid State Drive", "Solid Storage Device", "Secure Storage Drive", "Secure State Device"], answer: "Solid State Drive" },
+                { question: "What is the name of the first social media platform?", options: ["Facebook", "MySpace", "Friendster", "Six Degrees"], answer: "Six Degrees" },
+                { question: "What does API stand for?", options: ["Application Programming Interface", "Application Process Integration", "Automated Programming Interface", "Application Programming Integration"], answer: "Application Programming Interface" },
+                { question: "What is the name of the first video game?", options: ["Pong", "Spacewar!", "Tennis for Two", "Pac-Man"], answer: "Tennis for Two" },
+                { question: "What does VPN stand for?", options: ["Virtual Private Network", "Virtual Public Network", "Virtual Protected Network", "Virtual Personal Network"], answer: "Virtual Private Network" },
+                { question: "What is the name of the first operating system?", options: ["UNIX", "DOS", "Windows", "GM-NAA I/O"], answer: "GM-NAA I/O" },
+                { question: "What does SQL stand for?", options: ["Structured Query Language", "Standard Query Language", "Simple Query Language", "System Query Language"], answer: "Structured Query Language" },
+                { question: "What is the name of the first email service?", options: ["Hotmail", "Gmail", "Yahoo Mail", "ARPANET Mail"], answer: "ARPANET Mail" },
+                { question: "What does LAN stand for?", options: ["Local Area Network", "Large Area Network", "Local Access Network", "Large Access Network"], answer: "Local Area Network" },
+                { question: "What is the name of the first computer virus?", options: ["Creeper", "ILOVEYOU", "Melissa", "Brain"], answer: "Creeper" },
+                { question: "What does BIOS stand for?", options: ["Basic Input Output System", "Basic Integrated Operating System", "Basic Input Operating System", "Basic Integrated Output System"], answer: "Basic Input Output System" },
+                { question: "What is the name of the first programming book?", options: ["The Art of Computer Programming", "Programming in C", "A Manual of Operation for the Automatic Sequence Controlled Calculator", "Introduction to Algorithms"], answer: "A Manual of Operation for the Automatic Sequence Controlled Calculator" },
+                { question: "What does RFID stand for?", options: ["Radio Frequency Identification", "Radio Frequency Integration Device", "Radio Frequency Input Device", "Radio Frequency Identification Device"], answer: "Radio Frequency Identification" },
+                { question: "What is the name of the first computer game?", options: ["Spacewar!", "Pong", "Tennis for Two", "Pac-Man"], answer: "Spacewar!" },
+                { question: "What does GUI stand for?", options: ["Graphical User Interface", "General User Interface", "Graphical Utility Interface", "General Utility Interface"], answer: "Graphical User Interface" },
+                { question: "What is the name of the first computer mouse?", options: ["Trackball", "Roller Mouse", "X-Y Position Indicator", "Optical Mouse"], answer: "X-Y Position Indicator" },
+                { question: "What does HTTPs stand for?", options: ["HyperText Transfer Protocol Secure", "HyperText Transfer Protocol Standard", "HyperText Transfer Protocol Service", "HyperText Transfer Protocol System"], answer: "HyperText Transfer Protocol Secure" },
+                { question: "What is the name of the first computer programming language?", options: ["Assembly", "Fortran", "COBOL", "Ada"], answer: "Assembly" },
+                { question: "What does IP stand for?", options: ["Internet Protocol", "Internet Process", "Internet Program", "Internet Path"], answer: "Internet Protocol" },
+                { question: "What is the name of the first computer chip?", options: ["Intel 4004", "Intel 8080", "Intel 8086", "Intel Pentium"], answer: "Intel 4004" },
+                { question: "What does USB stand for?", options: ["Universal Serial Bus", "Universal System Bus", "Universal Storage Bus", "Universal Serial Board"], answer: "Universal Serial Bus" },
+                { question: "What is the name of the first computer network?", options: ["ARPANET", "Internet", "Ethernet", "Intranet"], answer: "ARPANET" },
+                { question: "What does OS stand for?", options: ["Operating System", "Operating Software", "Operating Service", "Operating Solution"], answer: "Operating System" },
+                { question: "What is the name of the first computer algorithm?", options: ["Ada Lovelace's Algorithm", "Turing Machine Algorithm", "Von Neumann Algorithm", "Pascal's Algorithm"], answer: "Ada Lovelace's Algorithm" },
+                { question: "What does XML stand for?", options: ["eXtensible Markup Language", "eXtended Markup Language", "eXtra Markup Language", "eXtreme Markup Language"], answer: "eXtensible Markup Language" },
+                { question: "What is the name of the first computer programming tool?", options: ["Punch Cards", "Assembly Language", "Compiler", "Interpreter"], answer: "Punch Cards" },
+                { question: "What does CSS stand for?", options: ["Cascading Style Sheets", "Cascading Style System", "Cascading Style Syntax", "Cascading Style Script"], answer: "Cascading Style Sheets" },
+                { question: "What is the name of the first computer programming paradigm?", options: ["Procedural Programming", "Object-Oriented Programming", "Functional Programming", "Logic Programming"], answer: "Procedural Programming" }
+
+            ],
+            tourism: [
+                { question: "The Eiffel Tower is located in which city?", options: ["London", "Paris", "Berlin", "Rome"], answer: "Paris" },
+                { question: "Which country is home to the Great Barrier Reef?", options: ["Brazil", "Australia", "Indonesia", "Mexico"], answer: "Australia" },
+                { question: "Which US city is known as the Big Apple?", options: ["Los Angeles", "San Francisco", "New York City", "Chicago"], answer: "New York City" },
+                { question: "Where is the Taj Mahal located?", options: ["India", "Pakistan", "Afghanistan", "Iran"], answer: "India" },
+                { question: "Which Asian city has a Disneyland park?", options: ["Tokyo", "Hong Kong", "Singapore", "Shanghai"], answer: "Hong Kong" },
+                { question: "What is the capital of Italy?", options: ["Rome", "Venice", "Florence", "Milan"], answer: "Rome" },
+                { question: "Which country is known for its pyramids?", options: ["Egypt", "Mexico", "Peru", "Greece"], answer: "Egypt" },
+                { question: "What is the largest desert in the world?", options: ["Sahara", "Gobi", "Kalahari", "Arabian"], answer: "Sahara" },
+                { question: "Which city is famous for its canals?", options: ["Amsterdam", "Venice", "Paris", "Prague"], answer: "Venice" },
+                { question: "What is the capital of Japan?", options: ["Tokyo", "Kyoto", "Osaka", "Hiroshima"], answer: "Tokyo" },
+                { question: "Which country is known for its tulip fields?", options: ["Netherlands", "Belgium", "France", "Germany"], answer: "Netherlands" },
+                { question: "What is the capital of Australia?", options: ["Sydney", "Melbourne", "Canberra", "Brisbane"], answer: "Canberra" },
+                { question: "Which city is known as the City of Love?", options: ["Rome", "Paris", "Venice", "Barcelona"], answer: "Paris" },
+                { question: "What is the capital of Spain?", options: ["Madrid", "Barcelona", "Seville", "Valencia"], answer: "Madrid" },
+                { question: "Which country is home to the Colosseum?", options: ["Greece", "Italy", "Turkey", "Egypt"], answer: "Italy" },
+                { question: "What is the capital of Canada?", options: ["Toronto", "Vancouver", "Ottawa", "Montreal"], answer: "Ottawa" },
+                { question: 'In which country would you find the Great Wall?', options: ['China', 'Japan', 'Korea', 'Vietnam'], answer: 'China' },
+                { question: 'What is the capital of Egypt?', options: ['Cairo', 'Alexandria', 'Giza', 'Luxor'], answer: 'Cairo' },
+                { question: 'Which city is known for its ancient ruins of Pompeii?', options: ['Rome', 'Naples', 'Florence', 'Venice'], answer: 'Naples' },
+                { question: 'What is the capital of Greece?', options: ['Athens', 'Thessaloniki', 'Crete', 'Rhodes'], answer: 'Athens' },
+                { question: 'Which country is known for its fjords?', options: ['Norway', 'Sweden', 'Finland', 'Denmark'], answer: 'Norway' },
+                { question: 'What is the capital of Thailand?', options: ['Bangkok', 'Chiang Mai', 'Phuket', 'Pattaya'], answer: 'Bangkok' },
+                { question: 'Which city is known for its historic Alhambra palace?', options: ['Madrid', 'Barcelona', 'Granada', 'Seville'], answer: 'Granada' },
+                { question: 'What is the capital of Brazil?', options: ['Rio de Janeiro', 'São Paulo', 'Brasília', 'Salvador'], answer: 'Brasília' },
+                { question: "What is the capital of South Africa?", options: ["Cape Town", "Pretoria", "Johannesburg", "Durban"], answer: "Pretoria" },
+                { question: "Which country is known for its cherry blossoms?", options: ["China", "Japan", "South Korea", "Vietnam"], answer: "Japan" },
+                { question: "What is the capital of Russia?", options: ["Moscow", "St. Petersburg", "Kazan", "Novosibirsk"], answer: "Moscow" },
+                { question: "Which city is known for its historic Acropolis?", options: ["Athens", "Rome", "Istanbul", "Cairo"], answer: "Athens" },
+                { question: "What is the capital of Turkey?", options: ["Istanbul", "Ankara", "Izmir", "Bursa"], answer: "Ankara" },
+                { question: 'In which country would you find the cultural festival of Oktoberfest?', options: ['Germany', 'Austria', 'Switzerland', 'Belgium'], answer: 'Germany' },
+                { question: 'What is the capital of Portugal?', options: ['Lisbon', 'Porto', 'Braga', 'Coimbra'], answer: 'Lisbon' },
+                { question: 'Which city is known for its historic Colosseum?', options: ['Rome', 'Athens', 'Istanbul', 'Cairo'], answer: 'Rome' },
+                { question: 'What is the capital of Mexico?', options: ['Mexico City', 'Guadalajara', 'Monterrey', 'Cancun'], answer: 'Mexico City' },
+                { question: "What is the capital of India?", options: ["New Delhi", "Mumbai", "Bangalore", "Chennai"], answer: "New Delhi" },
+                { question: "Which country is known for its ancient ruins of Petra?", options: ["Jordan", "Egypt", "Turkey", "Greece"], answer: "Jordan" },
+                { question: "What is the capital of Argentina?", options: ["Buenos Aires", "Córdoba", "Rosario", "Mendoza"], answer: "Buenos Aires" },
+                { question: "Which city is known for its historic Tower of London?", options: ["London", "Paris", "Berlin", "Rome"], answer: "London" },
+                { question: 'In which country would you find the cultural festival of Carnival?', options: ['Brazil', 'Argentina', 'Colombia', 'Peru'], answer: 'Brazil' },
+                { question: 'What is the capital of Sweden?', options: ['Stockholm', 'Gothenburg', 'Malmo', 'Uppsala'], answer: 'Stockholm' },
+                { question: 'Which city is known for its historic Sagrada Familia?', options: ['Barcelona', 'Madrid', 'Valencia', 'Seville'], answer: 'Barcelona' },
+                { question: 'What is the capital of the Netherlands?', options: ['Amsterdam', 'Rotterdam', 'Utrecht', 'The Hague'], answer: 'Amsterdam' },
+                { question: 'Which country is known for its ancient ruins of Machu Picchu?', options: ['Peru', 'Mexico', 'Brazil', 'Chile'], answer: 'Peru' },
+                { question: "What is the capital of Kenya?", options: ["Nairobi", "Mombasa", "Kisumu", "Nakuru"], answer: "Nairobi" },
+                { question: "Which city is known for its historic Brandenburg Gate?", options: ["Berlin", "Munich", "Hamburg", "Frankfurt"], answer: "Berlin" },
+                { question: "What is the capital of Vietnam?", options: ["Hanoi", "Ho Chi Minh City", "Da Nang", "Hue"], answer: "Hanoi" },
+                { question: 'In which country would you find the cultural festival of La Tomatina?', options: ['Spain', 'Italy', 'France', 'Portugal'], answer: 'Spain' },
+                { question: 'What is the capital of Hungary?', options: ['Budapest', 'Prague', 'Vienna', 'Bratislava'], answer: 'Budapest' },
+                { question: 'Which city is known for its historic Eiffel Tower?', options: ['Paris', 'London', 'Berlin', 'Rome'], answer: 'Paris' },
+                { question: 'What is the capital of Belgium?', options: ['Brussels', 'Antwerp', 'Ghent', 'Bruges'], answer: 'Brussels' },
+                { question: 'Which country is known for its ancient ruins of Angkor Wat?', options: ['Cambodia', 'Thailand', 'Vietnam', 'Laos'], answer: 'Cambodia' },
+                { question: 'What is the capital of South Korea?', options: ['Seoul', 'Busan', 'Incheon', 'Gwangju'], answer: 'Seoul' },
+                { question: 'Which city is known for its historic Colosseum?', options: ['Rome', 'Athens', 'Istanbul', 'Cairo'], answer: 'Rome' },
+                { question: 'What is the capital of Norway?', options: ['Oslo', 'Bergen', 'Stavanger', 'Trondheim'], answer: 'Oslo' },
+                { question: "What is the capital of Greece?", options: ["Athens", "Thessaloniki", "Crete", "Rhodes"], answer: "Athens" },
+                { question: "Which country is known for its ancient ruins of Chichen Itza?", options: ["Mexico", "Peru", "Brazil", "Colombia"], answer: "Mexico" },
+                { question: "What is the capital of Malaysia?", options: ["Kuala Lumpur", "Penang", "Malacca", "Johor Bahru"], answer: "Kuala Lumpur" },
+                { question: 'In which country would you find the cultural festival of Holi?', options: ['India', 'Nepal', 'Bangladesh', 'Pakistan'], answer: 'India' },
+                { question: 'What is the capital of Finland?', options: ['Helsinki', 'Espoo', 'Tampere', 'Oulu'], answer: 'Helsinki' },
+                { question: 'Which city is known for its historic Acropolis?', options: ['Athens', 'Rome', 'Istanbul', 'Cairo'], answer: 'Athens' },
+                { question: 'What is the capital of Denmark?', options: ['Copenhagen', 'Aarhus', 'Odense', 'Aalborg'], answer: 'Copenhagen' },
+                { question: 'Which country is known for its ancient ruins of Stonehenge?', options: ['England', 'Scotland', 'Wales', 'Ireland'], answer: 'England' },
+                { question: "What is the capital of Iceland?", options: ["Reykjavik", "Akureyri", "Kopavogur", "Hafnarfjordur"], answer: "Reykjavik" },
+                { question: "Which city is known for its historic Tower Bridge?", options: ["London", "Paris", "Berlin", "Rome"], answer: "London" },
+                { question: 'In which country would you find the cultural festival of Carnival?', options: ['Brazil', 'Argentina', 'Colombia', 'Peru'], answer: 'Brazil' },
+                { question: 'What is the capital of Switzerland?', options: ['Bern', 'Zurich', 'Geneva', 'Basel'], answer: 'Bern' },
+                { question: 'Which city is known for its historic Colosseum?', options: ['Rome', 'Athens', 'Istanbul', 'Cairo'], answer: 'Rome' },
+                { question: 'What is the capital of Egypt?', options: ['Cairo', 'Alexandria', 'Giza', 'Luxor'], answer: 'Cairo' },
+                { question: 'Which country is known for its ancient ruins of Petra?', options: ['Jordan', 'Egypt', 'Turkey', 'Greece'], answer: 'Jordan' },
+                { question: 'What is the capital of Argentina?', options: ['Buenos Aires', 'Córdoba', 'Rosario', 'Mendoza'], answer: 'Buenos Aires' },
+                { question: "What is the capital of Kenya?", options: ["Nairobi", "Mombasa", "Kisumu", "Nakuru"], answer: "Nairobi" },
+                { question: "Which city is known for its historic Brandenburg Gate?", options: ["Berlin", "Munich", "Hamburg", "Frankfurt"], answer: "Berlin" },
+                { question: "What is the capital of Vietnam?", options: ["Hanoi", "Ho Chi Minh City", "Da Nang", "Hue"], answer: "Hanoi" },
+                { question: 'In which country would you find the cultural festival of La Tomatina?', options: ['Spain', 'Italy', 'France', 'Portugal'], answer: 'Spain' },
+                { question: 'What is the capital of Hungary?', options: ['Budapest', 'Prague', 'Vienna', 'Bratislava'], answer: 'Budapest' },
+                { question: 'Which city is known for its historic Eiffel Tower?', options: ['Paris', 'London', 'Berlin', 'Rome'], answer: 'Paris' },
+                { question: 'What is the capital of Belgium?', options: ['Brussels', 'Antwerp', 'Ghent', 'Bruges'], answer: 'Brussels' },
+                { question: 'Which country is known for its ancient ruins of Angkor Wat?', options: ['Cambodia', 'Thailand', 'Vietnam', 'Laos'], answer: 'Cambodia' },
+            ],
+        };
+
+
+        let selectedQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const categoriesContainer = document.querySelector("#categories");
+        const quizContainer = document.querySelector("#quiz");
+        const resultContainer = document.querySelector("#result");
+        const tryAgainButton = document.querySelector(".try-again");
+
+        function shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function startQuiz(category) {
+            selectedQuestions = shuffleArray(triviaQuestions[category]).slice(0, 10);
+            currentQuestionIndex = 0;
+            score = 0;
+            categoriesContainer.classList.add("hidden");
+            quizContainer.classList.remove("hidden");
+            tryAgainButton.classList.add("hidden");
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const questionData = selectedQuestions[currentQuestionIndex];
+            const questionElement = quizContainer.querySelector(".question");
+            const optionsContainer = quizContainer.querySelector(".options");
+            const messageContainer = quizContainer.querySelector(".message");
+
+            questionElement.textContent = questionData.question;
+            optionsContainer.innerHTML = "";
+            messageContainer.textContent = "";
+
+            questionData.options.forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.className = "bg-blue-500 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-600 w-full";
+                button.addEventListener("click", () => checkAnswer(option));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const questionData = selectedQuestions[currentQuestionIndex];
+            const messageContainer = quizContainer.querySelector(".message");
+
+            if (selectedOption === questionData.answer) {
+                messageContainer.textContent = "Correct!";
+                messageContainer.className = "message text-green-500 font-medium";
+                score++;
+            } else {
+                messageContainer.textContent = `Wrong! The correct answer was: ${questionData.answer}`;
+                messageContainer.className = "message text-red-500 font-medium";
+            }
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < selectedQuestions.length) {
+                    loadQuestion();
+                } else {
+                    showResult();
+                }
+            }, 1000);
+        }
+
+        function showResult() {
+            quizContainer.classList.add("hidden");
+            resultContainer.classList.remove("hidden");
+            tryAgainButton.classList.remove("hidden");
+
+            if (score >= 8) {
+                resultContainer.textContent = `Congratulations! You passed with a score of ${score}/10.`;
+                resultContainer.className = "text-green-500 font-bold text-xl";
+            } else {
+                resultContainer.textContent = `You scored ${score}/10. Unfortunately, you did not pass.`;
+                resultContainer.className = "text-red-500 font-bold text-xl";
+            }
+        }
+
+        function restartQuiz() {
+            resultContainer.classList.add("hidden");
+            tryAgainButton.classList.add("hidden");
+            categoriesContainer.classList.remove("hidden");
+        }
+    </script>
+</body>
+
+</html>
