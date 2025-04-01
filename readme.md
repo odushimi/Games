@@ -48,3 +48,15 @@ A browser-based quiz game where players can test their knowledge across various 
 3. Run the following command:
    ```bash
    python tic-tac-toe.py
+   ```
+
+### World Trivia:
+1. Open the `world-trivia.html` file in any modern web browser.
+2. Select a category and start playing!
+
+---
+
+## Technologies Used
+
+- **Tic-Tac-Toe**: Python
+- **World Trivia**: HTML, JavaScript, Tailwind CSS
